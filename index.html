@@ -233,6 +233,9 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 .nav nav{margin-left:auto}
 @media (max-width:480px){.nav ul li.hide-xs{display:none}.nav ul{gap:12px}.brand{font-size:19px}}
 @media (prefers-reduced-motion:reduce){.rv{transition:none}.rv-hide{opacity:1;transform:none}.proj,.theme-btn{transition:none}}
+/* v7: 3D hit-testing fix — the tilt layer sat in front of rotated cards, so clicks missed cards 11+ */
+.tilt,.ring{pointer-events:none}
+.card{pointer-events:auto}
 /* v6: player overlay + fallback */
 .player .ytp, .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .tap-play{position:absolute;inset:0;border:0;padding:0;margin:0;background:rgba(20,18,16,.18);display:grid;place-items:center;cursor:pointer;z-index:2}
