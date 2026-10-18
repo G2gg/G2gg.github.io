@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Gunesh Gupta · Robotics Portfolio</title>
-<meta name="description" content="Gunesh Gupta: robotics research intern at IIT Roorkee. ROS 2, MoveIt 2, Nav2 and reinforcement learning, shown through 16 project videos.">
+<meta name="description" content="Gunesh Gupta: robotics research intern at IIT Roorkee. ROS 2, MoveIt 2, Nav2 and reinforcement learning, shown through 18 project videos.">
 <meta property="og:title" content="Gunesh Gupta · Robotics Portfolio">
 <meta property="og:description" content="A self-built PAROL6 arm, a Nav2 rover and RL research for bipeds and manipulators.">
 <meta property="og:type" content="website">
@@ -18,7 +18,7 @@
 /* Layout: calm editorial column; one showpiece — a draggable 3D ring of project videos — between hero and the quiet sections below. */
 :root{
   --paper:#F6F3EE; --surface:#FFFDFA; --ink:#22201D; --ink-muted:#6B655D; --line:#E2DCD2;
-  --orange:#D0602F; --orange-ink:#B04E22; --orange-tint:#F3DFD2; --slate:#5D6670; --steel:#3D6A8A; --sage:#5E6B3E; --on-orange:#FFFFFF;
+  --orange:#D0602F; --orange-ink:#B04E22; --orange-tint:#F3DFD2; --slate:#5D6670; --steel:#3D6A8A; --sage:#5E6B3E; --plum:#7D4B6E; --on-orange:#FFFFFF;
   --shadow-card:0 1px 2px rgba(34,32,29,.06),0 8px 24px rgba(34,32,29,.08);
   --shadow-lift:0 2px 4px rgba(34,32,29,.08),0 20px 48px rgba(34,32,29,.16);
   --f-display:"Newsreader","Iowan Old Style",Georgia,serif;
@@ -28,13 +28,13 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --paper:#1C1A18; --surface:#262320; --ink:#EEEAE3; --ink-muted:#A39C92; --line:#3A3632;
-  --orange:#E0814F; --orange-ink:#E8915F; --orange-tint:#3A2A21; --slate:#8E98A3; --steel:#7FA6C4; --sage:#A3AE82; --on-orange:#1C1A18;
+  --orange:#E0814F; --orange-ink:#E8915F; --orange-tint:#3A2A21; --slate:#8E98A3; --steel:#7FA6C4; --sage:#A3AE82; --plum:#CFA3C2; --on-orange:#1C1A18;
   --shadow-card:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
   --shadow-lift:0 2px 4px rgba(0,0,0,.4),0 20px 48px rgba(0,0,0,.5);
   color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#1C1A18; --surface:#262320; --ink:#EEEAE3; --ink-muted:#A39C92; --line:#3A3632;
-  --orange:#E0814F; --orange-ink:#E8915F; --orange-tint:#3A2A21; --slate:#8E98A3; --steel:#7FA6C4; --sage:#A3AE82; --on-orange:#1C1A18;
+  --orange:#E0814F; --orange-ink:#E8915F; --orange-tint:#3A2A21; --slate:#8E98A3; --steel:#7FA6C4; --sage:#A3AE82; --plum:#CFA3C2; --on-orange:#1C1A18;
   --shadow-card:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
   --shadow-lift:0 2px 4px rgba(0,0,0,.4),0 20px 48px rgba(0,0,0,.5);
   color-scheme:dark}
@@ -180,10 +180,10 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 @media (hover:none),(pointer:coarse){.cursor{display:none}}
 @media (prefers-reduced-motion:reduce){.cursor{display:none}.tilt{transition:none}html{scroll-behavior:auto}.btn,.social{transition:none}}
 /* v4: lively layer — project colours, hero arm, blueprint grid, stats, reveal, theme toggle */
-:root{--c-parol:var(--orange-ink);--c-rl:var(--steel);--c-bumper:var(--sage);--c-early:var(--slate);--grid:rgba(34,32,29,.09)}
+:root{--c-parol:var(--orange-ink);--c-rl:var(--steel);--c-bumper:var(--sage);--c-early:var(--slate);--c-build:var(--plum);--grid:rgba(34,32,29,.09)}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--grid:rgba(238,234,227,.07)}}
 :root[data-theme="dark"]{--grid:rgba(238,234,227,.07)}
-.g-parol{--gc:var(--c-parol)} .g-rl{--gc:var(--c-rl)} .g-bumper{--gc:var(--c-bumper)} .g-early{--gc:var(--c-early)}
+.g-parol{--gc:var(--c-parol)} .g-rl{--gc:var(--c-rl)} .g-bumper{--gc:var(--c-bumper)} .g-early{--gc:var(--c-early)} .g-build{--gc:var(--c-build)}
 .tint{background:var(--orange-tint)}
 @supports (background:color-mix(in srgb,red 50%,blue)){
   .card .thumb, .tint{background:color-mix(in srgb,var(--gc,var(--orange)) 17%,var(--surface))}
@@ -232,6 +232,12 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 .nav nav{margin-left:auto}
 @media (max-width:480px){.nav ul li.hide-xs{display:none}.nav ul{gap:12px}.brand{font-size:19px}}
 @media (prefers-reduced-motion:reduce){.rv{transition:none}.rv-hide{opacity:1;transform:none}.proj,.theme-btn{transition:none}}
+/* v5: project-type badge over real thumbnails */
+.thumb .badge{display:none;position:absolute;left:10px;bottom:10px;width:40px;height:40px;border-radius:10px;background:var(--surface);color:var(--gc,var(--ink));box-shadow:0 2px 10px rgba(0,0,0,.25);place-items:center}
+.thumb.has-img .badge{display:grid}
+.thumb .badge svg.bot{width:28px;height:28px;opacity:1;color:inherit}
+.card:not(.front) .thumb .badge{width:34px;height:34px}
+.card:not(.front) .thumb .badge svg.bot{width:24px;height:24px}
 /* v3: publications, certifications */
 .pubs{display:grid}
 .pub{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;padding-block:22px;border-top:1px solid var(--line)}
@@ -280,6 +286,13 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 .vrow:hover .t{color:var(--orange-ink)}
 .vrow:hover .go{background:var(--orange-ink);color:var(--on-orange);border-color:var(--orange-ink)}
 .player{position:relative;aspect-ratio:16/9;max-width:100%;background:#000}
+.player.vertical{aspect-ratio:9/16;height:min(70vh,640px);width:auto;margin:0 auto}
+dialog.vertical{width:min(440px,calc(100vw - 32px))}
+.proj.thin{grid-column:1/-1;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);column-gap:40px;align-items:center}
+.proj.thin > :not(.vids){grid-column:1}
+.proj.thin .vids{grid-column:2;grid-row:1 / span 5;margin-top:0;align-self:center}
+@media (max-width:820px){.proj.thin{grid-template-columns:1fr}.proj.thin .vids{grid-column:1;grid-row:auto;margin-top:6px}}
+.short-tag{font:500 10px/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--gc);border:1px solid currentColor;border-radius:4px;padding:3px 5px;margin-left:8px;vertical-align:2px}
 .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .yt-link{font:400 13px/20px var(--f-mono);color:var(--ink-muted);overflow-wrap:anywhere}
 </style>
@@ -329,7 +342,7 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
     </div>
     <div class="wrap">
       <dl class="stats" id="stats">
-        <div class="stat"><dt>project videos</dt><dd data-count="16">16</dd></div>
+        <div class="stat"><dt>project videos</dt><dd data-count="18">18</dd></div>
         <div class="stat"><dt>research labs: IIT Roorkee, IIIT Hyderabad</dt><dd data-count="2">2</dd></div>
         <div class="stat"><dt>publications, incl. an arXiv preprint</dt><dd data-count="2">2</dd></div>
         <div class="stat"><dt>robot arm built from scratch</dt><dd data-count="6">6<small>DOF</small></dd></div>
@@ -342,7 +355,7 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
     <div class="wrap">
       <div class="showcase-head">
         <div style="display:grid;gap:8px">
-          <span class="label">16 videos · 4 projects</span>
+          <span class="label">18 videos · 5 projects</span>
           <h2>Video reel</h2>
         </div>
       </div>
@@ -381,7 +394,7 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
         <div><dt class="label">Simulation & learning</dt><dd>NVIDIA Isaac Sim · Isaac Lab · reinforcement learning</dd></div>
         <div><dt class="label">Estimation & control</dt><dd>Kalman filter localisation · sensor fusion · PID · kinematics</dd></div>
         <div><dt class="label">Hardware</dt><dd>Arduino · ESP32 · Teensy 4.1 · Raspberry Pi · NVIDIA Jetson Orin Nano</dd></div>
-        <div><dt class="label">Design</dt><dd>Autodesk Fusion 360</dd></div>
+        <div><dt class="label">Design</dt><dd>Autodesk Fusion 360 · 3D printing · gearbox design</dd></div>
       </dl>
     </div>
   </section>
@@ -492,6 +505,8 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
   const PREVIEW = /claude|anthropic/i.test(location.hostname) || !/^https?:$/.test(location.protocol);
 
   const ICONS = {
+    cyclo:'<circle cx="50" cy="50" r="34"/><path d="M50 22c6 0 7 6 12 7s9-3 12 2-1 9 1 13 8 4 8 10-6 7-7 12 3 9-2 12-9-1-13 1-4 8-10 8-7-6-12-7-9 3-12-2 1-9-1-13-8-4-8-10 6-7 7-12-3-9 2-12 9 1 13-1 4-8 10-8z" transform="translate(4 2) scale(.92)"/><circle cx="54" cy="52" r="8"/><circle cx="50" cy="50" r="2.5"/>',
+    stepper:'<rect x="16" y="34" width="40" height="40" rx="4"/><path d="M22 40h28M22 68h28"/><path d="M56 54h12"/><circle cx="76" cy="54" r="14"/><path d="M76 40v4M76 64v4M62 54h4M86 54h4M66 44l3 3M86 64l-3-3M66 64l3-3M86 44l-3 3"/><circle cx="76" cy="54" r="4"/>',
     arm6:'<path d="M22 90h56M32 90v-8h36v8M50 82V68"/><circle cx="50" cy="64" r="5"/><path d="M47 60L36 40"/><circle cx="34" cy="36" r="4"/><path d="M38 34l26-6"/><circle cx="67" cy="28" r="3.5"/><path d="M70 30l8 8M78 38l-2 6M78 38l6 2"/>',
     sketch:'<rect x="14" y="62" width="72" height="26" rx="3"/><path d="M24 78c6-8 12 4 18-4s12 6 18-2 10 4 14-2"/><path d="M74 74V42L54 28"/><circle cx="52" cy="26" r="4"/><circle cx="74" cy="42" r="3"/>',
     hand:'<path d="M34 86V54l-6-14M42 86V30M50 86V24M58 86V30M66 86V44"/><path d="M30 86h40"/><circle cx="78" cy="20" r="8"/><path d="M78 12v-4M86 20h4"/>',
@@ -517,6 +532,9 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
     {id:'rl', name:'RL research', title:'Reinforcement learning research', wide:true,
      desc:"At IIIT Hyderabad's Robotics Research Center I trained a biped to walk with RL in Isaac Lab and transferred the policy to ROS 2 Gazebo. At IIT Roorkee's CARS Lab I optimised the link lengths of a planar 2R arm with RL and validated the result on hardware.",
      spec:'Isaac Lab · Gazebo · hardware validation', link:['Read the arXiv preprint','https://doi.org/10.48550/arXiv.2610.15756']},
+    {id:'build', name:'Actuators & 3D printing', title:'Actuator & gearbox builds', thin:true,
+     desc:'Actuators I designed and 3D-printed myself: a cycloidal gearbox driven by a BLDC motor, and a stepper-motor gearbox with an encoder for position feedback.',
+     spec:'Cycloidal drive · BLDC · stepper + encoder · 3D printing'},
     {id:'early', name:'Earlier builds', title:'Earlier builds & competitions',
      desc:'My first robot built from scratch in ROS 2, an e-Yantra Robotics Competition task, and Soileye, a crop and fertilizer recommendation project.',
      spec:'ROS 2 · Alexa · eYRC'}
@@ -536,6 +554,8 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
     {id:'aaArbk9Incs', g:'bumper', t:'Custom joystick + Kalman filter', s:'Kalman filter · sensor fusion', icon:'joystick', d:'Driving Bumperbot with a custom-made joystick, with Kalman-filter localisation and probabilistic sensor fusion so it behaves like a real robot.'},
     {id:'WK1Bf38t5dI', g:'rl', t:'Biped walking: Isaac Lab to ROS 2 Gazebo', s:'Isaac Lab · Gazebo · RRC IIIT-H', icon:'biped', d:'A walking policy for a custom biped, trained with RL in Isaac Lab and transferred sim-to-sim to ROS 2 Gazebo, at the Robotics Research Center, IIIT Hyderabad.'},
     {id:'XzHh0STetLM', g:'rl', t:'RL-optimised 2R arm on hardware', s:'2R planar arm · IIT Roorkee CARS Lab', icon:'arm2r', d:"Hardware validation of RL-optimised link lengths for a planar 2R arm, similar to a SCARA. From my arXiv preprint at IIT Roorkee's CARS Lab."},
+    {id:'B5PT3a5-0bA', g:'build', short:true, t:'Cycloidal gearbox with BLDC motor', s:'Cycloidal drive · BLDC · 3D printed', icon:'cyclo', d:'A 3D-printed cycloidal gearbox driven by a BLDC motor.'},
+    {id:'9lOJt3HMRmU', g:'build', short:true, t:'Stepper gearbox with encoder', s:'Stepper motor · encoder · 3D printed', icon:'stepper', d:'A 3D-printed gearbox actuator with a stepper motor and an encoder for position feedback.'},
     {id:'o1OK7FZXAJY', g:'early', t:'e-Yantra (eYRC) Task 2B', s:'eYRC · Team 1971', icon:'drone', d:'Task 2B submission for the e-Yantra Robotics Competition.'},
     {id:'BzQ2hgsy_NM', g:'early', t:'Soileye', s:'Crop & fertilizer recommendation', icon:'plant', d:'Crop and fertilizer recommendation.'},
     {id:'ZfHawDhjY-k', g:'early', t:'Alexa-controlled 3-DOF arm', s:'ROS 2 Humble · Amazon Alexa', icon:'alexa', d:'My first robot built from scratch in ROS 2: a 3-DOF manipulator controlled by voice through Amazon Alexa.'}
@@ -546,11 +566,11 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const pad = n => String(n).padStart(2,'0');
   const gOf = id => GROUPS.find(g => g.id === id);
-  const ytUrl = v => `https://www.youtube.com/watch?v=${v.id}`;
-  const svgIcon = k => `<svg class="bot" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
-  const realThumb = v => PREVIEW ? '' : `<img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">`;
+  const ytUrl = v => v.short ? `https://www.youtube.com/shorts/${v.id}` : `https://www.youtube.com/watch?v=${v.id}`;
+  const svgIcon = (k, sw = 2.4) => `<svg class="bot" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+  const realThumb = v => PREVIEW ? '' : `<img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" onload="this.parentNode.classList.add('has-img')" onerror="this.remove()">`;
   const playDot = '<span class="play" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
-  const thumbHTML = v => `${svgIcon(v.icon)}${realThumb(v)}${playDot}`;
+  const thumbHTML = v => `${svgIcon(v.icon)}${realThumb(v)}<span class="badge" aria-hidden="true">${svgIcon(v.icon, 5.5)}</span>${playDot}`;
 
   const stage = document.getElementById('stage'), ring = document.getElementById('ring'), tilt = document.getElementById('tilt');
   const counter = document.getElementById('counter');
@@ -569,10 +589,10 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 
   // project cards
   const play = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg>';
-  document.getElementById('plist').innerHTML = ['parol','rl','bumper','early'].map(gOf).map(g => {
+  document.getElementById('plist').innerHTML = ['parol','rl','build','bumper','early'].map(gOf).map(g => {
     const rows = V.map((v,i)=>[v,i]).filter(([v])=>v.g===g.id).map(([v,i]) =>
-      `<button class="vrow" type="button" data-i="${i}"><span class="n">${pad(i+1)}</span><span class="t">${v.t}</span><span class="go" aria-hidden="true">${play}</span></button>`).join('');
-    return `<article class="proj g-${g.id}${g.wide?' wide':''}"><span class="label">${g.name}</span><h3>${g.title}</h3><p class="spec">${g.spec}</p><p class="d">${g.desc}</p>${g.link?`<a class="more" href="${g.link[1]}" target="_blank" rel="noopener">${g.link[0]} →</a>`:''}<div class="vids">${rows}</div></article>`;
+      `<button class="vrow" type="button" data-i="${i}"><span class="n">${pad(i+1)}</span><span class="t">${v.t}${v.short?'<span class="short-tag">Short</span>':''}</span><span class="go" aria-hidden="true">${play}</span></button>`).join('');
+    return `<article class="proj g-${g.id}${g.wide?' wide':''}${g.thin?' thin':''}"><span class="label">${g.name}</span><h3>${g.title}</h3><p class="spec">${g.spec}</p><p class="d">${g.desc}</p>${g.link?`<a class="more" href="${g.link[1]}" target="_blank" rel="noopener">${g.link[0]} →</a>`:''}<div class="vids">${rows}</div></article>`;
   }).join('');
   document.querySelectorAll('.vrow').forEach(r => r.addEventListener('click', () => openModal(+r.dataset.i)));
 
@@ -667,12 +687,13 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
     const media = document.getElementById('m-media');
     media.innerHTML = PREVIEW
       ? `<a class="thumb tint g-${v.g} yt-open" href="${ytUrl(v)}" target="_blank" rel="noopener" aria-label="Play ${v.t} on YouTube">${thumbHTML(v)}</a>`
-      : `<div class="player"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0" title="${v.t}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>`;
+      : `<div class="player${v.short?' vertical':''}"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0" title="${v.t}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>`;
     document.getElementById('m-cat').textContent = g.name;
     document.getElementById('m-title').textContent = v.t;
     document.getElementById('m-spec').textContent = v.s;
     document.getElementById('m-desc').textContent = v.d;
     document.getElementById('m-yt').href = ytUrl(v);
+    modal.classList.toggle('vertical', !!v.short && !PREVIEW);
     try { modal.showModal(); } catch(_) { modal.setAttribute('open',''); }
   }
   modal.addEventListener('close', () => { document.getElementById('m-media').innerHTML = ''; });
