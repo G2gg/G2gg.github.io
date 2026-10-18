@@ -8,6 +8,7 @@
 <meta property="og:title" content="Gunesh Gupta · Robotics Portfolio">
 <meta property="og:description" content="A self-built PAROL6 arm, a Nav2 rover and RL research for bipeds and manipulators.">
 <meta property="og:type" content="website">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#F6F3EE">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23B04E22'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23F6F3EE' stroke-width='2.5'/%3E%3C/svg%3E">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
@@ -232,6 +233,15 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 .nav nav{margin-left:auto}
 @media (max-width:480px){.nav ul li.hide-xs{display:none}.nav ul{gap:12px}.brand{font-size:19px}}
 @media (prefers-reduced-motion:reduce){.rv{transition:none}.rv-hide{opacity:1;transform:none}.proj,.theme-btn{transition:none}}
+/* v6: player overlay + fallback */
+.player .ytp, .player iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tap-play{position:absolute;inset:0;border:0;padding:0;margin:0;background:rgba(20,18,16,.18);display:grid;place-items:center;cursor:pointer;z-index:2}
+.tap-play .pb, a.yt-open .pb{width:72px;height:72px;border-radius:999px;background:var(--orange-ink);color:var(--on-orange);display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.3);transition:transform .2s ease}
+.tap-play:hover .pb{transform:scale(1.08)}
+.tap-play .pb svg{width:28px;height:28px;margin-left:3px}
+.sound-pill{position:absolute;left:12px;top:12px;z-index:3;font:500 12px/1.3 var(--f-sans);background:rgba(20,18,16,.8);color:#fff;padding:6px 10px;border-radius:999px;pointer-events:none}
+a.yt-open .yt-note{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font:500 12px/1 var(--f-mono);background:var(--surface);color:var(--ink);padding:6px 10px;border-radius:999px;white-space:nowrap}
+a.yt-open .badge{display:none!important}
 /* v5: project-type badge over real thumbnails */
 .thumb .badge{display:none;position:absolute;left:10px;bottom:10px;width:40px;height:40px;border-radius:10px;background:var(--surface);color:var(--gc,var(--ink));box-shadow:0 2px 10px rgba(0,0,0,.25);place-items:center}
 .thumb.has-img .badge{display:grid}
@@ -687,7 +697,7 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
     const media = document.getElementById('m-media');
     media.innerHTML = PREVIEW
       ? `<a class="thumb tint g-${v.g} yt-open" href="${ytUrl(v)}" target="_blank" rel="noopener" aria-label="Play ${v.t} on YouTube">${thumbHTML(v)}</a>`
-      : `<div class="player${v.short?' vertical':''}"><iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0" title="${v.t}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>`;
+      : '';
     document.getElementById('m-cat').textContent = g.name;
     document.getElementById('m-title').textContent = v.t;
     document.getElementById('m-spec').textContent = v.s;
@@ -695,8 +705,60 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
     document.getElementById('m-yt').href = ytUrl(v);
     modal.classList.toggle('vertical', !!v.short && !PREVIEW);
     try { modal.showModal(); } catch(_) { modal.setAttribute('open',''); }
+    if (!PREVIEW) mountPlayer(v, media);
   }
-  modal.addEventListener('close', () => { document.getElementById('m-media').innerHTML = ''; });
+
+  /* ---- YouTube player: autoplay, whole-area click to play, clear fallback ---- */
+  let ytApi = null, player = null, playToken = 0;
+  function loadYT(){
+    if (ytApi) return ytApi;
+    ytApi = new Promise((res, rej) => {
+      if (window.YT && window.YT.Player) return res(window.YT);
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if (prev) prev(); res(window.YT); };
+      const sc = document.createElement('script'); sc.src = 'https://www.youtube.com/iframe_api'; sc.async = true;
+      sc.onerror = () => { ytApi = null; rej(new Error('api')); };
+      document.head.appendChild(sc);
+      setTimeout(() => rej(new Error('timeout')), 8000);
+    });
+    return ytApi;
+  }
+  const bigPlay = '<span class="pb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l11-6.5z"/></svg></span>';
+  function plainIframe(v){
+    return `<iframe src="https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1" title="${v.t}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`;
+  }
+  function showFallback(v, media, code){
+    console.warn('YouTube could not play', v.id, 'error code', code, '(101/150 = embedding turned off for this video, 100 = private or removed, 153 = referrer blocked)');
+    media.innerHTML = `<a class="thumb tint g-${v.g} yt-open" href="${ytUrl(v)}" target="_blank" rel="noopener" aria-label="Play ${v.t} on YouTube">${thumbHTML(v)}<span class="yt-note">Plays on YouTube</span></a>`;
+  }
+  function mountPlayer(v, media){
+    const token = ++playToken;
+    media.innerHTML = `<div class="player${v.short?' vertical':''}"><div class="ytp"></div><button class="tap-play" type="button" aria-label="Play ${v.t}">${bigPlay}</button><span class="sound-pill" hidden>Muted. Use the speaker icon in the player for sound.</span></div>`;
+    const wrap = media.firstElementChild, tap = wrap.querySelector('.tap-play'), pill = wrap.querySelector('.sound-pill');
+    const playing = () => { try { const st = player.getPlayerState(); return st === 1 || st === 3; } catch(_) { return false; } };
+    tap.addEventListener('click', () => {
+      if (!player || !player.playVideo) return;
+      player.playVideo();
+      setTimeout(() => { if (token === playToken && player && !playing()){ try { player.mute(); player.playVideo(); pill.hidden = false; setTimeout(() => pill.hidden = true, 6000); } catch(_) {} } }, 900);
+    });
+    loadYT().then(YT => {
+      if (token !== playToken || !modal.open) return;
+      player = new YT.Player(wrap.querySelector('.ytp'), {
+        videoId: v.id, host: 'https://www.youtube-nocookie.com',
+        playerVars: { autoplay: 1, rel: 0, playsinline: 1, origin: location.origin },
+        events: {
+          onReady: e => { e.target.playVideo(); setTimeout(() => { if (token === playToken && playing()) tap.hidden = true; }, 1500); },
+          onStateChange: e => { if (e.data === 1 || e.data === 3) tap.hidden = true; },
+          onError: e => { if (token === playToken) { destroyPlayer(); showFallback(v, media, e.data); } }
+        }
+      });
+    }).catch(() => {
+      if (token !== playToken) return;
+      wrap.querySelector('.ytp').outerHTML = plainIframe(v); tap.hidden = true;
+    });
+  }
+  function destroyPlayer(){ try { if (player && player.destroy) player.destroy(); } catch(_) {} player = null; }
+  modal.addEventListener('close', () => { playToken++; destroyPlayer(); document.getElementById('m-media').innerHTML = ''; });
   document.getElementById('m-close').onclick = () => modal.close();
   modal.addEventListener('click', e => { if (e.target === modal) modal.close(); });
 
