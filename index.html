@@ -6,11 +6,11 @@
 <title>Gunesh Gupta · Robotics Portfolio</title>
 <meta name="description" content="Gunesh Gupta: robotics research intern at IIT Roorkee. ROS 2, MoveIt 2, Nav2 and reinforcement learning, shown through 18 project videos.">
 <meta property="og:title" content="Gunesh Gupta · Robotics Portfolio">
-<meta property="og:description" content="A self-made PAROL6 arm, a Nav2 rover and RL research for bipeds and manipulators.">
+<meta property="og:description" content="I self-built PAROL6 arm, a Nav2 rover and RL research for bipeds and manipulators.">
 <meta property="og:type" content="website">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="theme-color" content="#F6F3EE">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23B04E22'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23F6F3EE' stroke-width='2.5'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23B8481A'/%3E%3Ccircle cx='16' cy='16' r='7' fill='none' stroke='%23FFFFFF' stroke-width='2.5'/%3E%3C/svg%3E">
 <style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -210,10 +210,13 @@ dialog .note{font-size:13px;color:var(--ink-muted);background:var(--paper);borde
 .hero{position:relative;overflow:hidden}
 .hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:32px 32px;background-position:-1px -1px;-webkit-mask-image:radial-gradient(ellipse 80% 75% at 60% 40%,#000 30%,transparent 80%);mask-image:radial-gradient(ellipse 80% 75% at 60% 40%,#000 30%,transparent 80%);pointer-events:none}
 .hero .wrap{position:relative;z-index:1}
+#droneCanvas{position:fixed;top:0;right:0;width:116px;height:100vh;pointer-events:none;z-index:40}
+#bipedCanvas{position:absolute;left:0;width:100%;height:0;pointer-events:none;z-index:0}
+@media (max-width:760px){.stats{margin-top:116px}}
 #armCanvas{position:absolute;top:0;left:0;width:100%;height:0;pointer-events:none;z-index:0}
 .portrait .backdrop, .portrait img, .portrait .slot{will-change:transform}
 
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:48px 0 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:150px 0 0;position:relative;z-index:1;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .stat{padding:20px 20px 20px 0;display:grid;gap:4px;min-width:0}
 .stat + .stat{padding-left:20px;border-left:1px solid var(--line)}
 .stat dd{margin:0;font-family:var(--f-display);font-size:clamp(34px,4.5vw,48px);line-height:1;color:var(--ink);font-variant-numeric:tabular-nums}
@@ -313,6 +316,7 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
 </head>
 <body>
 <div class="cursor" aria-hidden="true"></div>
+<canvas id="droneCanvas" aria-hidden="true"></canvas>
 
 <header class="nav">
   <div class="wrap">
@@ -333,6 +337,7 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
 
 <main id="top">
   <section class="hero">
+    <canvas id="bipedCanvas" aria-hidden="true"></canvas>
     <div class="wrap">
       <div class="hero-text">
       <span class="label">Robotics · ROS 2 · Reinforcement learning</span>
@@ -542,7 +547,7 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
   };
 
   const GROUPS = [
-    {id:'parol', name:'PAROL6 arm', title:'Self-made PAROL6 6-DOF arm', wide:true,
+    {id:'parol', name:'PAROL6 arm', title:'Self-built PAROL6 6-DOF arm', wide:true,
      desc:"A 6-DOF arm whose structure comes from Source Robotics' PAROL6, with electronics and software I built myself on ROS 2 Humble. I brought it up joint by joint, planned motion with MoveIt 2, drove it from hand movements seen by a camera, and turned it into a sketching robot.",
      spec:'6-DOF · ROS 2 Humble · MoveIt 2 · computer vision'},
     {id:'bumper', name:'Bumperbot', title:'Bumperbot mobile robot',
@@ -785,7 +790,7 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
   if (fine && !reduce){
     const cur = document.querySelector('.cursor'); let mx=0,my=0,cx=0,cy=0;
     addEventListener('pointermove', e => { mx=e.clientX; my=e.clientY; cur.classList.add('on');
-      cur.classList.toggle('big', !!e.target.closest('a,button,.card')); });
+      cur.classList.toggle('big', !!e.target.closest('a,button,.card') || !!(window.__nearBiped && window.__nearBiped(e.clientX, e.clientY))); });
     document.addEventListener('pointerleave', () => cur.classList.remove('on'));
     (function loop(){ cx += (mx-cx)*.2; cy += (my-cy)*.2; cur.style.transform = `translate(${cx}px,${cy}px)`; requestAnimationFrame(loop); })();
   }
@@ -845,6 +850,284 @@ dialog.vertical{width:min(440px,calc(100vw - 32px))}
       });
     }, {passive:true});
   }
+
+  /* ---- 2D biped on the hero ground line: walking gait + push recovery ----
+     Each leg: hip roll + hip pitch (double dot), knee, ankle, foot. Kinematic gait with a
+     capture-point style foot placement, so a push makes it take a longer recovery step. */
+  (function biped(){
+    const cv = document.getElementById('bipedCanvas'); if (!cv) return;
+    const ctx = cv.getContext('2d'), statsEl = document.getElementById('stats');
+    const B = { s:1, W:0, H:0, ground:0, xmin:0, xmax:0, dpr:1, narrow:false };
+    const C = {};
+    function colors(){ const cs = getComputedStyle(document.documentElement);
+      ['ink','ink-muted','paper','surface','orange','orange-ink','slate','steel','line'].forEach(k => C[k] = cs.getPropertyValue('--'+k).trim()); }
+    // geometry (scaled by B.s)
+    const G = { thigh:32, shank:32, hipDrop:7, ankleH:5, heel:5, toe:12, torsoW:22, torsoH:30, L:30, lift:9, Ts:0.42 };
+    const g = k => G[k]*B.s;
+    let hipX = 0, dir = 1, stepT = 0, swing = 0, feet = [0,0], liftX = 0, target = 0, stepLen = 0;
+    let hintT = 0, pushed = false, pushV = 0, lean = 0, leanV = 0, prints = [], arrows = [], lastNear = null, angles = {hip:0, knee:0, ankle:0};
+
+    function size(){
+      const hr = hero.getBoundingClientRect(), sr = statsEl.getBoundingClientRect();
+      const wrap = statsEl.parentElement.getBoundingClientRect();
+      const padL = parseFloat(getComputedStyle(statsEl.parentElement).paddingLeft) || 16;
+      const padR = parseFloat(getComputedStyle(statsEl.parentElement).paddingRight) || 16;
+      B.narrow = hr.width < 760; B.s = B.narrow ? 0.8 : 1.12;
+      B.dpr = Math.min(2, devicePixelRatio || 1);
+      B.W = hr.width; B.ground = Math.round(sr.top - hr.top) - 1;
+      const top = B.ground - Math.round(132*B.s);
+      cv.style.top = top + 'px'; B.H = Math.round(132*B.s) + 4; cv.style.height = B.H + 'px';
+      cv.width = B.W*B.dpr; cv.height = B.H*B.dpr; ctx.setTransform(B.dpr,0,0,B.dpr,0,0);
+      B.top = top; B.gy = B.H - 4;              // ground y inside the canvas
+      B.xmin = wrap.left - hr.left + padL + 24;
+      B.xmax = wrap.right - hr.left - padR - (B.narrow ? 24 : 250);
+      if (!hipX){ hipX = B.xmin + (B.xmax - B.xmin)*0.18; feet = [hipX - g('L')/2, hipX + g('L')/2]; swing = 0; startStep(); }
+      hipX = Math.min(Math.max(hipX, B.xmin), B.xmax);
+    }
+    function startStep(){
+      stepT = 0; swing = 1 - swing;
+      if ((dir > 0 && hipX > B.xmax) || (dir < 0 && hipX < B.xmin)) dir = -dir;
+      stepLen = g('L');
+      liftX = feet[swing];
+      const Ts = g('Ts')/B.s;
+      const hipEnd = hipX + dir*stepLen + pushV*(1 - Math.exp(-3*Ts))/3;
+      target = hipEnd + dir*stepLen/2 + 0.25*pushV;   // capture-point style placement
+    }
+    function legIK(hx, hy, ax, ay, knee){ // 2-link IK, knee bends toward walking direction
+      const L1 = g('thigh'), L2 = g('shank');
+      let dx = ax - hx, dy = ay - hy, d = Math.hypot(dx, dy);
+      const dc = Math.min(L1 + L2 - 0.5, Math.max(Math.abs(L1-L2) + 1, d));
+      const a = Math.atan2(dy, dx), c = (L1*L1 + dc*dc - L2*L2)/(2*L1*dc);
+      const off = Math.acos(Math.max(-1, Math.min(1, c)));
+      const t = a - knee*off;
+      const kx = hx + L1*Math.cos(t), ky = hy + L1*Math.sin(t);
+      const ex = hx + (dx/d||0)*dc, ey = hy + (dy/d||0)*dc;
+      return {kx, ky, ax: ex, ay: ey};
+    }
+    function push(fromX){
+      pushed = true; const away = Math.sign(hipX - fromX) || dir;
+      pushV = Math.max(-150, Math.min(150, pushV + away*140*B.s));
+      leanV += away*3.2;
+    }
+    window.__nearBiped = (cx, cy) => {
+      const r = cv.getBoundingClientRect(); const x = cx - r.left, y = cy - r.top;
+      return Math.abs(x - hipX) < 70*B.s && y > B.gy - 125*B.s && y < B.gy + 6;
+    };
+    document.addEventListener('pointerdown', e => {
+      if (e.button !== 0 || e.target.closest('a,button,input,dialog,.card')) return;
+      if (!window.__nearBiped(e.clientX, e.clientY)) return;
+      const r = cv.getBoundingClientRect();
+      push(e.clientX - r.left);
+      arrows.push({x: e.clientX - r.left, y: e.clientY - r.top, d: Math.sign(hipX - (e.clientX - r.left)) || dir, t: 0});
+    });
+
+    let last = performance.now();
+    function frame(now){
+      const dt = Math.min(0.05, (now - last)/1000); last = now;
+      const Ts = G.Ts;
+      if (!reduce){
+        // dynamics: push velocity decays, torso lean is a damped spring
+        pushV *= Math.exp(-3*dt);
+        leanV += (-45*lean - 7*leanV)*dt; lean += leanV*dt;
+        hipX += (dir*stepLen/Ts + pushV)*dt;
+        stepT += dt/Ts;
+        if (stepT >= 1){ feet[swing] = target; prints.push({x: target, t: 0}); startStep(); }
+      }
+      const s = Math.min(1, stepT), ease = s*s*(3 - 2*s);
+      const swingX = liftX + (target - liftX)*ease, swingY = Math.sin(Math.PI*s)*g('lift');
+      draw(s, swingX, swingY, dt);
+      if (!reduce) requestAnimationFrame(frame);
+    }
+    function dot(x, y, r, fill, stroke){ ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2); if (fill){ ctx.fillStyle = fill; ctx.fill(); } if (stroke){ ctx.lineWidth = 1.6; ctx.strokeStyle = stroke; ctx.stroke(); } }
+    function drawLeg(foot, lift, far, s){
+      const gy = B.gy, bob = Math.sin(Math.PI*s)*2.2*B.s;
+      const hy = gy - g('ankleH') - 0.93*(g('thigh') + g('shank')) - bob;
+      const hipRollY = hy - g('hipDrop');
+      const ax = foot, ay = gy - g('ankleH') - lift;
+      const k = legIK(hipX, hy, ax, ay, dir);
+      const a = far ? 0.45 : 0.85, col = far ? C.slate : C.ink;
+      ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.lineWidth = 2.2*B.s + 1; ctx.beginPath(); ctx.moveTo(hipX, hipRollY); ctx.lineTo(hipX, hy); ctx.stroke();
+      ctx.lineWidth = 4*B.s; ctx.beginPath(); ctx.moveTo(hipX, hy); ctx.lineTo(k.kx, k.ky); ctx.lineTo(k.ax, k.ay); ctx.stroke();
+      // foot: flat in stance, slight toe-down in swing
+      const pitch = lift > 0.5 ? -dir*0.25*Math.sin(Math.PI*s) : 0;
+      const hx = k.ax - dir*g('heel')*Math.cos(pitch), tx = k.ax + dir*g('toe')*Math.cos(pitch);
+      const hyy = k.ay + g('ankleH') - dir*g('heel')*Math.sin(-pitch), tyy = k.ay + g('ankleH') + dir*g('toe')*Math.sin(-pitch);
+      ctx.lineWidth = 3*B.s; ctx.beginPath(); ctx.moveTo(k.ax, k.ay); ctx.lineTo(k.ax, k.ay + g('ankleH')); ctx.moveTo(hx, hyy); ctx.lineTo(tx, tyy); ctx.stroke();
+      ctx.globalAlpha = 1;
+      const jr = 3.6*B.s, fillJ = far ? C.surface : C.paper;
+      ctx.globalAlpha = far ? 0.6 : 1;
+      dot(hipX, hipRollY, jr + 0.6, fillJ, col);           // hip roll
+      dot(hipX, hy, jr, far ? C.slate : C.orange, null);    // hip pitch
+      dot(k.kx, k.ky, jr, fillJ, col);                     // knee
+      dot(k.ax, k.ay, jr - 0.4, fillJ, col);               // ankle
+      ctx.globalAlpha = 1;
+      if (!far){
+        const deg = r => Math.round(r*180/Math.PI);
+        angles.hip = deg(Math.atan2(k.kx - hipX, k.ky - hy))*dir;
+        angles.knee = deg(Math.atan2(k.ax - k.kx, k.ay - k.ky) - Math.atan2(k.kx - hipX, k.ky - hy))*-dir;
+        angles.ankle = deg(pitch)*-dir;
+      }
+      return hipRollY;
+    }
+    function draw(s, swingX, swingY, dt){
+      ctx.clearRect(0, 0, B.W, B.H);
+      // footprints fading on the ground line
+      ctx.fillStyle = C.orange;
+      prints = prints.filter(p => (p.t += dt) < 2.2);
+      prints.forEach(p => { ctx.globalAlpha = 0.45*(1 - p.t/2.2); ctx.fillRect(p.x - 6*B.s, B.gy - 1, 14*B.s, 2); });
+      ctx.globalAlpha = 1;
+      const st = 1 - swing;
+      // far leg = the one behind in screen depth: draw swing leg as far on odd steps for variety
+      const farIdx = 0, nearIdx = 1;
+      const pos = i => i === swing ? [swingX, swingY] : [feet[i], 0];
+      const [fx, fl] = pos(farIdx), [nx, nl] = pos(nearIdx);
+      drawLeg(fx, fl, true, s);
+      // torso: box above the hip-roll joints, leaning with the spring state
+      const bob = Math.sin(Math.PI*s)*2.2*B.s;
+      const hipRollY = B.gy - g('ankleH') - 0.93*(g('thigh') + g('shank')) - bob - g('hipDrop');
+      ctx.save(); ctx.translate(hipX, hipRollY); ctx.rotate(lean*0.35 + dir*0.04);
+      const w = g('torsoW'), h = g('torsoH');
+      ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
+      ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(-w/2, -h - 3*B.s, w, h, 5*B.s); else ctx.rect(-w/2, -h - 3*B.s, w, h);
+      ctx.fill(); ctx.stroke();
+      dot(dir*w*0.18, -h*0.62, 2.4*B.s, C.steel, null);   // IMU
+      ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-w*0.3, -h - 3*B.s); ctx.lineTo(-w*0.3, -h - 9*B.s); ctx.stroke(); // antenna
+      dot(-w*0.3, -h - 10*B.s, 1.8*B.s, C.orange, null);
+      ctx.restore();
+      drawLeg(nx, nl, false, s);
+      // push arrows
+      arrows = arrows.filter(a => (a.t += dt) < 0.7);
+      arrows.forEach(a => {
+        ctx.globalAlpha = 1 - a.t/0.7; ctx.strokeStyle = C.orange; ctx.lineWidth = 2;
+        const x0 = a.x - a.d*26, x1 = a.x - a.d*6 + a.d*a.t*20;
+        ctx.beginPath(); ctx.moveTo(x0, a.y); ctx.lineTo(x1, a.y); ctx.moveTo(x1, a.y); ctx.lineTo(x1 - a.d*6, a.y - 5); ctx.moveTo(x1, a.y); ctx.lineTo(x1 - a.d*6, a.y + 5); ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+      // readout + hint
+      ctx.font = `500 ${B.narrow ? 10 : 11}px "JetBrains Mono", ui-monospace, monospace`;
+      ctx.fillStyle = C.slate; ctx.textAlign = 'right';
+      const rx = B.xmax + (B.narrow ? 24 : 250);
+      if (!B.narrow){
+        const phase = (swing + s)/2;
+        ctx.fillText(`gait φ ${phase.toFixed(2)}`, rx, B.gy - 74);
+        ctx.fillText(`hip ${angles.hip}°  knee ${angles.knee}°  ankle ${angles.ankle}°`, rx, B.gy - 58);
+        ctx.fillStyle = C['ink-muted']; ctx.fillText('click near the biped to push it', rx, B.gy - 16);
+      } else {
+        hintT += dt;
+        if (hintT < 9 && !pushed){ ctx.globalAlpha = Math.min(1, (9 - hintT)/1.5); ctx.textAlign = 'right'; ctx.fillStyle = C['ink-muted'];
+          ctx.fillText('tap the biped to push it', rx, 12); ctx.globalAlpha = 1; }
+      }
+    }
+    colors(); size();
+    addEventListener('resize', size);
+    if (window.ResizeObserver) new ResizeObserver(size).observe(hero);
+    new MutationObserver(colors).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', colors);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { size(); if (reduce) frame(performance.now()); });
+    requestAnimationFrame(frame);
+  })();
+
+  /* ---- PID drone scroll indicator ----
+     A small 2D quadcopter on a thin track at the right edge. Its setpoint is the scroll position;
+     a PID loop (with a simple mass + drag model) flies it there, so it overshoots a little and
+     settles in about two seconds. The gains and error show while it is correcting. */
+  (function drone(){
+    const cv = document.getElementById('droneCanvas'); if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const KP = 6.0, KI = 0.6, KD = 3.2, DRAG = 0.4, AMAX = 2600;
+    const D = { W:0, H:0, dpr:1, s:1, x:0, top:0, bot:0, narrow:false };
+    const C = {};
+    let y = null, v = 0, integ = 0, target = 0, showT = 0, t0 = performance.now(), last = t0, ticks = [];
+    function colors(){ const cs = getComputedStyle(document.documentElement);
+      ['ink','ink-muted','paper','surface','orange','orange-ink','slate','line'].forEach(k => C[k] = cs.getPropertyValue('--'+k).trim()); }
+    function size(){
+      D.narrow = innerWidth < 760; D.s = D.narrow ? 0.62 : 1;
+      D.W = D.narrow ? 42 : 116; D.H = innerHeight; D.dpr = Math.min(2, devicePixelRatio || 1);
+      cv.style.width = D.W + 'px'; cv.style.height = D.H + 'px';
+      cv.width = D.W*D.dpr; cv.height = D.H*D.dpr; ctx.setTransform(D.dpr,0,0,D.dpr,0,0);
+      D.x = D.W - (D.narrow ? 21 : 32);
+      D.top = D.narrow ? 84 : 96; D.bot = D.H - (D.narrow ? 28 : 40);
+      // section ticks along the track
+      const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      ticks = ['projects','builds','research','resume','contact'].map(id => {
+        const el = document.getElementById(id); if (!el) return null;
+        const f = Math.min(1, Math.max(0, (el.getBoundingClientRect().top + scrollY - 80) / max));
+        return D.top + f*(D.bot - D.top);
+      }).filter(Boolean);
+      setTarget(); if (y === null) y = target;
+    }
+    function setTarget(){
+      const max = Math.max(1, document.documentElement.scrollHeight - innerHeight);
+      const f = Math.min(1, Math.max(0, scrollY / max));
+      const nt = D.top + f*(D.bot - D.top);
+      if (Math.abs(nt - target) > 0.5) showT = 2.2;
+      target = nt;
+    }
+    addEventListener('scroll', setTarget, {passive:true});
+    addEventListener('resize', size);
+    function frame(now){
+      const dt = Math.min(0.033, (now - last)/1000); last = now;
+      const e = target - y;
+      if (reduce){ y = target; v = 0; integ = 0; }
+      else {
+        integ = Math.max(-60, Math.min(60, integ + e*dt));          // anti-windup clamp
+        let a = KP*e + KI*integ - KD*v - DRAG*v;                     // derivative on measurement
+        a = Math.max(-AMAX, Math.min(AMAX, a));
+        v += a*dt; y += v*dt;
+      }
+      if (Math.abs(e) > 1.5 || Math.abs(v) > 6) showT = Math.max(showT, 1.2);
+      showT = Math.max(0, showT - dt);
+      draw(now, e);
+      requestAnimationFrame(frame);
+    }
+    function draw(now, e){
+      const s = D.s, t = (now - t0)/1000;
+      ctx.clearRect(0, 0, D.W, D.H);
+      // track + section ticks + setpoint marker
+      ctx.strokeStyle = C.line; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(D.x, D.top); ctx.lineTo(D.x, D.bot); ctx.stroke();
+      ctx.lineWidth = 1.5; ticks.forEach(ty => { ctx.beginPath(); ctx.moveTo(D.x - 4*s, ty); ctx.lineTo(D.x + 4*s, ty); ctx.stroke(); });
+      ctx.strokeStyle = C.orange; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(D.x - 7*s, target); ctx.lineTo(D.x + 7*s, target); ctx.stroke();
+      // drone (side view): hover bob, tiny tilt from vertical speed so it feels alive
+      const bob = reduce ? 0 : Math.sin(t*2.1)*1.2*s;
+      const dy = y + bob, tilt = reduce ? 0 : Math.max(-0.12, Math.min(0.12, -v*0.0005)) + Math.sin(t*1.3)*0.015;
+      ctx.save(); ctx.translate(D.x, dy); ctx.rotate(tilt);
+      const arm = 17*s;
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 2*s + 0.4;
+      ctx.beginPath(); ctx.moveTo(-arm, -3*s); ctx.lineTo(arm, -3*s); ctx.stroke();                    // arms
+      ctx.beginPath(); ctx.moveTo(-arm, -3*s); ctx.lineTo(-arm, -7*s); ctx.moveTo(arm, -3*s); ctx.lineTo(arm, -7*s); ctx.stroke(); // motor posts
+      // spinning props: width pulses to fake rotation blur
+      const pw = (7 + 3*Math.abs(Math.sin(t*38)))*s, pw2 = (7 + 3*Math.abs(Math.cos(t*41)))*s;
+      ctx.strokeStyle = C.slate; ctx.lineWidth = 1.6*s + 0.3;
+      ctx.beginPath(); ctx.moveTo(-arm - pw, -8*s); ctx.lineTo(-arm + pw, -8*s); ctx.moveTo(arm - pw2, -8*s); ctx.lineTo(arm + pw2, -8*s); ctx.stroke();
+      // body
+      ctx.fillStyle = C.surface; ctx.strokeStyle = C.ink; ctx.lineWidth = 1.8*s + 0.2;
+      ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(-8*s, -6*s, 16*s, 9*s, 3*s); else ctx.rect(-8*s, -6*s, 16*s, 9*s); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, -1.5*s, 1.8*s, 0, Math.PI*2); ctx.fillStyle = Math.abs(e) > 1.5 ? C.orange : C.slate; ctx.fill(); // status LED
+      ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4*s;
+      ctx.beginPath(); ctx.moveTo(-5*s, 3*s); ctx.lineTo(-7*s, 7*s); ctx.moveTo(5*s, 3*s); ctx.lineTo(7*s, 7*s); ctx.stroke(); // skids
+      ctx.restore();
+      // PID readout: only while correcting, fades out once settled
+      if (!D.narrow && showT > 0){
+        const a = Math.min(1, showT/0.6);
+        ctx.globalAlpha = a; ctx.textAlign = 'right';
+        const tx = D.x - 26, ty = Math.min(D.bot - 50, Math.max(D.top + 8, dy - 24));
+        ctx.font = '500 10px "JetBrains Mono", ui-monospace, monospace';
+        ctx.fillStyle = C.slate;
+        ctx.fillText(`Kp ${KP.toFixed(1)}`, tx, ty); ctx.fillText(`Ki ${KI.toFixed(1)}`, tx, ty + 13); ctx.fillText(`Kd ${KD.toFixed(1)}`, tx, ty + 26);
+        ctx.fillStyle = Math.abs(e) > 1.5 ? C['orange-ink'] : C['ink-muted'];
+        ctx.fillText(`e ${e >= 0 ? '+' : '−'}${Math.abs(e).toFixed(0)}`, tx, ty + 42);
+        ctx.globalAlpha = 1;
+      }
+    }
+    colors(); size();
+    new MutationObserver(colors).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+    matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', colors);
+    if (window.ResizeObserver) new ResizeObserver(() => size()).observe(document.body);
+    requestAnimationFrame(frame);
+  })();
 
   /* ---- 2R arm that follows the cursor (same kinematics as the planar 2R paper) ---- */
   const cv = document.getElementById('armCanvas'), ctx = cv.getContext('2d');
